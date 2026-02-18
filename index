@@ -1,0 +1,543 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Viral InstaGenius - AI-Powered Viral Content Research & Creation</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        serif: ['Playfair Display', 'serif'],
+                    },
+                    colors: {
+                        viral: {
+                            50: '#fdf2f8',
+                            100: '#fce7f3',
+                            200: '#fbcfe8',
+                            300: '#f9a8d4',
+                            400: '#f472b6',
+                            500: '#ec4899',
+                            600: '#db2777',
+                            700: '#be185d',
+                            800: '#9d174d',
+                            900: '#831843',
+                        }
+                    },
+                    animation: {
+                        'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .gradient-text {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 25%, #f093fb 50%, #f5576c 75%, #4facfe 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-size: 300% 300%;
+            animation: gradient 8s ease infinite;
+        }
+        @keyframes gradient {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+        .viral-gradient {
+            background: linear-gradient(135deg, #ec4899 0%, #8b5cf6 50%, #3b82f6 100%);
+        }
+        .trending-card {
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        .trending-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(236, 72, 153, 0.2);
+        }
+        .trending-card.selected {
+            border: 3px solid #ec4899;
+            background: linear-gradient(135deg, #fdf2f8 0%, #fce7f3 100%);
+        }
+        .hook-card {
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        .hook-card:hover {
+            transform: scale(1.02);
+        }
+        .hook-card.selected {
+            border: 3px solid #10b981;
+            background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%);
+        }
+        .loader {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #ec4899;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .format-btn.active {
+            background: linear-gradient(135deg, #ec4899 0%, #8b5cf6 100%);
+            color: white;
+            transform: scale(1.05);
+        }
+        .viral-score {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body class="bg-gray-50 dark:bg-gray-900 transition-colors duration-300 font-sans">
+    <nav class="fixed w-full z-50 bg-white/90 dark:bg-gray-800/90 backdrop-blur-md border-b border-gray-200 dark:border-gray-700">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <div class="flex items-center space-x-2">
+                    <div class="w-10 h-10 viral-gradient rounded-xl flex items-center justify-center text-white font-bold text-xl animate-pulse">
+                        <i class="fas fa-fire"></i>
+                    </div>
+                    <span class="text-2xl font-bold gradient-text">Viral InstaGenius</span>
+                </div>
+                <button onclick="toggleDarkMode()" class="p-2 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-700 transition">
+                    <i class="fas fa-moon dark:hidden text-gray-700"></i>
+                    <i class="fas fa-sun hidden dark:block text-yellow-400"></i>
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <main class="pt-24 pb-12 px-4 max-w-7xl mx-auto">
+        <div class="text-center mb-12">
+            <h1 class="text-5xl md:text-6xl font-bold mb-4">
+                <span class="gradient-text">Create Viral Content</span>
+            </h1>
+            <p class="text-xl text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
+                AI researches trending topics, suggests viral hooks, and creates optimized posts
+            </p>
+        </div>
+
+        <section id="step1" class="mb-12">
+            <div class="flex items-center justify-between mb-6">
+                <h2 class="text-2xl font-bold text-gray-900 dark:text-white">
+                    <span class="bg-viral-500 text-white w-8 h-8 rounded-full inline-flex items-center justify-center mr-2 text-sm">1</span>
+                    Research Trending Topics
+                </h2>
+                <button onclick="researchTopics()" id="researchBtn" class="px-6 py-3 bg-gradient-to-r from-viral-500 to-purple-600 text-white rounded-xl font-semibold hover:shadow-lg transition-all">
+                    <i class="fas fa-search mr-2"></i>Research Now
+                </button>
+            </div>
+
+            <div id="researchLoading" class="hidden text-center py-12">
+                <div class="loader mx-auto mb-4"></div>
+                <p class="text-gray-600 dark:text-gray-400">Analyzing trending topics in your niche...</p>
+            </div>
+
+            <div id="trendingTopics" class="hidden grid md:grid-cols-2 lg:grid-cols-3 gap-4"></div>
+        </section>
+
+        <section id="step2" class="mb-12 hidden">
+            <div class="flex items-center justify-between mb-6">
+                <h2 class="text-2xl font-bold text-gray-900 dark:text-white">
+                    <span class="bg-viral-500 text-white w-8 h-8 rounded-full inline-flex items-center justify-center mr-2 text-sm">2</span>
+                    Choose Viral Hook
+                </h2>
+            </div>
+            <div id="selectedTopicDisplay" class="mb-6 p-4 bg-viral-50 dark:bg-viral-900/20 rounded-xl border border-viral-200 dark:border-viral-800">
+                <p class="text-sm text-gray-600 dark:text-gray-400">Selected Topic:</p>
+                <p id="selectedTopicText" class="text-lg font-semibold text-viral-700 dark:text-viral-300"></p>
+            </div>
+            <div id="hooksContainer" class="space-y-4"></div>
+        </section>
+
+        <section id="step3" class="mb-12 hidden">
+            <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-6">
+                <span class="bg-viral-500 text-white w-8 h-8 rounded-full inline-flex items-center justify-center mr-2 text-sm">3</span>
+                Select Content Format
+            </h2>
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+                <button onclick="selectFormat('reels')" id="format-reels" class="format-btn p-6 bg-white dark:bg-gray-800 rounded-2xl border-2 border-gray-200 dark:border-gray-700 text-center">
+                    <i class="fas fa-video text-3xl mb-3 text-viral-500"></i>
+                    <h3 class="font-bold text-gray-900 dark:text-white">Reels</h3>
+                    <p class="text-xs text-gray-500 mt-1">15-90 sec video</p>
+                </button>
+                <button onclick="selectFormat('carousel')" id="format-carousel" class="format-btn p-6 bg-white dark:bg-gray-800 rounded-2xl border-2 border-gray-200 dark:border-gray-700 text-center">
+                    <i class="fas fa-images text-3xl mb-3 text-viral-500"></i>
+                    <h3 class="font-bold text-gray-900 dark:text-white">Carousel</h3>
+                    <p class="text-xs text-gray-500 mt-1">2-10 slides</p>
+                </button>
+                <button onclick="selectFormat('story')" id="format-story" class="format-btn p-6 bg-white dark:bg-gray-800 rounded-2xl border-2 border-gray-200 dark:border-gray-700 text-center">
+                    <i class="fas fa-circle-notch text-3xl mb-3 text-viral-500"></i>
+                    <h3 class="font-bold text-gray-900 dark:text-white">Story</h3>
+                    <p class="text-xs text-gray-500 mt-1">24hr ephemeral</p>
+                </button>
+                <button onclick="selectFormat('static')" id="format-static" class="format-btn p-6 bg-white dark:bg-gray-800 rounded-2xl border-2 border-gray-200 dark:border-gray-700 text-center">
+                    <i class="fas fa-image text-3xl mb-3 text-viral-500"></i>
+                    <h3 class="font-bold text-gray-900 dark:text-white">Static</h3>
+                    <p class="text-xs text-gray-500 mt-1">Single image</p>
+                </button>
+            </div>
+            <button onclick="createContent()" id="createBtn" class="w-full py-4 bg-gradient-to-r from-viral-500 to-purple-600 text-white rounded-xl font-semibold text-lg hover:shadow-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed" disabled>
+                <i class="fas fa-magic mr-2"></i>Create Viral Content
+            </button>
+        </section>
+
+        <section id="step4" class="hidden">
+            <div class="flex items-center justify-between mb-6">
+                <h2 class="text-2xl font-bold text-gray-900 dark:text-white">
+                    <span class="bg-viral-500 text-white w-8 h-8 rounded-full inline-flex items-center justify-center mr-2 text-sm">4</span>
+                    Your Viral Content
+                </h2>
+                <div class="flex gap-2">
+                    <button onclick="copyContent()" class="px-4 py-2 bg-gray-100 dark:bg-gray-700 rounded-lg hover:bg-gray-200 transition">
+                        <i class="fas fa-copy mr-2"></i>Copy All
+                    </button>
+                    <button onclick="resetAll()" class="px-4 py-2 bg-viral-100 dark:bg-viral-900 text-viral-700 dark:text-viral-300 rounded-lg hover:bg-viral-200 transition">
+                        <i class="fas fa-redo mr-2"></i>Start Over
+                    </button>
+                </div>
+            </div>
+
+            <div class="bg-white dark:bg-gray-800 rounded-3xl shadow-2xl p-8">
+                <div class="flex items-center justify-between mb-6 pb-6 border-b border-gray-200 dark:border-gray-700">
+                    <div>
+                        <span id="contentFormatBadge" class="px-3 py-1 bg-viral-100 dark:bg-viral-900 text-viral-700 dark:text-viral-300 rounded-full text-sm font-medium"></span>
+                        <span id="viralScoreBadge" class="ml-2 px-3 py-1 viral-score rounded-full text-sm"></span>
+                    </div>
+                    <div class="text-right">
+                        <p class="text-sm text-gray-500">Predicted Engagement</p>
+                        <p id="engagementPrediction" class="text-2xl font-bold text-viral-600"></p>
+                    </div>
+                </div>
+
+                <div class="space-y-6">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Hook</label>
+                        <div id="finalHook" class="p-4 bg-viral-50 dark:bg-viral-900/20 rounded-xl text-lg font-medium text-gray-900 dark:text-white border-l-4 border-viral-500"></div>
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Caption</label>
+                        <textarea id="finalCaption" rows="6" class="w-full px-4 py-3 rounded-xl border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white" readonly></textarea>
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Trending Hashtags (5)</label>
+                        <div id="finalHashtags" class="flex flex-wrap gap-2"></div>
+                    </div>
+
+                    <div id="contentStructure" class="hidden">
+                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Content Structure</label>
+                        <div class="p-4 bg-blue-50 dark:bg-blue-900/20 rounded-xl">
+                            <ul id="structureList" class="space-y-2 text-gray-700 dark:text-gray-300"></ul>
+                        </div>
+                    </div>
+
+                    <div class="grid md:grid-cols-2 gap-4 pt-4">
+                        <div class="p-4 bg-green-50 dark:bg-green-900/20 rounded-xl">
+                            <h4 class="font-semibold text-green-800 dark:text-green-300 mb-2">
+                                <i class="fas fa-check-circle mr-2"></i>Why This Works
+                            </h4>
+                            <ul id="whyItWorks" class="text-sm text-green-700 dark:text-green-400 space-y-1"></ul>
+                        </div>
+                        <div class="p-4 bg-purple-50 dark:bg-purple-900/20 rounded-xl">
+                            <h4 class="font-semibold text-purple-800 dark:text-purple-300 mb-2">
+                                <i class="fas fa-clock mr-2"></i>Best Time to Post
+                            </h4>
+                            <p id="bestTime" class="text-sm text-purple-700 dark:text-purple-400"></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <script>
+        let selectedTopic = null;
+        let selectedHook = null;
+        let selectedFormat = null;
+        let trendingData = [];
+
+        document.addEventListener('DOMContentLoaded', () => {
+            if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+                document.documentElement.classList.add('dark');
+            }
+        });
+
+        function toggleDarkMode() {
+            document.documentElement.classList.toggle('dark');
+        }
+
+        async function researchTopics() {
+            const niche = prompt('Enter your niche (e.g., Fitness, Fashion, Tech):') || 'general';
+            
+            document.getElementById('researchBtn').disabled = true;
+            document.getElementById('researchLoading').classList.remove('hidden');
+            document.getElementById('trendingTopics').classList.add('hidden');
+
+            await new Promise(r => setTimeout(r, 2000));
+
+            trendingData = generateTrendingTopics(niche);
+            displayTrendingTopics(trendingData);
+
+            document.getElementById('researchLoading').classList.add('hidden');
+            document.getElementById('trendingTopics').classList.remove('hidden');
+            document.getElementById('researchBtn').disabled = false;
+        }
+
+        function generateTrendingTopics(niche) {
+            const topics = {
+                fitness: [
+                    { topic: '5-minute morning workouts', viralScore: 94, engagement: 'High', reason: 'Time-efficient content performs well' },
+                    { topic: 'Gym mistakes beginners make', viralScore: 91, engagement: 'Very High', reason: 'Educational + relatable' },
+                    { topic: 'What I eat in a day', viralScore: 88, engagement: 'High', reason: 'Popular format' },
+                    { topic: 'Fitness myths debunked', viralScore: 87, engagement: 'High', reason: 'Controversy drives engagement' },
+                    { topic: 'Transformation Tuesday stories', viralScore: 85, engagement: 'Medium', reason: 'Emotional connection' },
+                    { topic: 'Quick healthy recipes', viralScore: 82, engagement: 'Medium', reason: 'Practical value' }
+                ],
+                fashion: [
+                    { topic: 'Capsule wardrobe essentials', viralScore: 95, engagement: 'Very High', reason: 'Sustainable fashion trend' },
+                    { topic: 'Outfit of the day transitions', viralScore: 92, engagement: 'Very High', reason: 'Visual appeal + transitions popular' },
+                    { topic: 'Thrift flip transformations', viralScore: 90, engagement: 'High', reason: 'Before/after format' },
+                    { topic: 'Style mistakes aging you', viralScore: 88, engagement: 'High', reason: 'Fear-based engagement' },
+                    { topic: 'Budget luxury looks', viralScore: 85, engagement: 'Medium', reason: 'Value proposition' },
+                    { topic: 'Sustainable fashion swaps', viralScore: 83, engagement: 'Medium', reason: 'Eco-conscious trend' }
+                ],
+                tech: [
+                    { topic: 'Hidden iPhone features', viralScore: 96, engagement: 'Very High', reason: 'Utility + discovery' },
+                    { topic: 'Productivity app reviews', viralScore: 91, engagement: 'High', reason: 'Practical value' },
+                    { topic: 'Desk setup transformations', viralScore: 89, engagement: 'High', reason: 'Aesthetic appeal' },
+                    { topic: 'AI tools you need to know', viralScore: 88, engagement: 'Very High', reason: 'Hot topic' },
+                    { topic: 'Coding tips for beginners', viralScore: 84, engagement: 'Medium', reason: 'Educational' },
+                    { topic: 'Gadget unboxing', viralScore: 82, engagement: 'Medium', reason: 'ASMR + novelty' }
+                ],
+                beauty: [
+                    { topic: 'Skincare routine order', viralScore: 93, engagement: 'Very High', reason: 'Educational + confusion-solving' },
+                    { topic: 'Makeup mistakes', viralScore: 90, engagement: 'High', reason: 'Relatable content' },
+                    { topic: 'Affordable dupes', viralScore: 88, engagement: 'High', reason: 'Value content' },
+                    { topic: 'Get ready with me', viralScore: 86, engagement: 'Medium', reason: 'Personal connection' },
+                    { topic: 'Product reviews', viralScore: 84, engagement: 'Medium', reason: 'Trust building' },
+                    { topic: 'Natural makeup tutorials', viralScore: 81, engagement: 'Medium', reason: 'Trending look' }
+                ],
+                business: [
+                    { topic: 'Passive income ideas', viralScore: 95, engagement: 'Very High', reason: 'Aspirational content' },
+                    { topic: 'Side hustle mistakes', viralScore: 92, engagement: 'High', reason: 'Pain point addressing' },
+                    { topic: 'Productivity hacks', viralScore: 89, engagement: 'High', reason: 'Practical value' },
+                    { topic: 'Mindset shifts for success', viralScore: 87, engagement: 'Medium', reason: 'Motivational' },
+                    { topic: 'Tools every entrepreneur needs', viralScore: 85, engagement: 'Medium', reason: 'Resource sharing' },
+                    { topic: 'Day in the life of CEO', viralScore: 83, engagement: 'Medium', reason: 'Behind-scenes appeal' }
+                ],
+                default: [
+                    { topic: `Top ${niche} trends this week`, viralScore: 90, engagement: 'High', reason: 'Timely + relevant' },
+                    { topic: `Common ${niche} mistakes`, viralScore: 88, engagement: 'High', reason: 'Educational value' },
+                    { topic: `${niche} tips for beginners`, viralScore: 86, engagement: 'Medium', reason: 'Accessibility' },
+                    { topic: `Why your ${niche} isn't working`, viralScore: 85, engagement: 'High', reason: 'Problem-solving' },
+                    { topic: `${niche} before and after`, viralScore: 83, engagement: 'Medium', reason: 'Visual proof' },
+                    { topic: `Budget ${niche} solutions`, viralScore: 81, engagement: 'Medium', reason: 'Value proposition' }
+                ]
+            };
+
+            return topics[niche.toLowerCase()] || topics.default;
+        }
+
+        function displayTrendingTopics(topics) {
+            const container = document.getElementById('trendingTopics');
+            container.innerHTML = topics.map((item, index) => `
+                <div class="trending-card bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-lg border-2 border-transparent" onclick="selectTopic(${index})" id="topic-${index}">
+                    <div class="flex justify-between items-start mb-3">
+                        <span class="viral-score px-3 py-1 rounded-full text-sm">${item.viralScore}/100</span>
+                        <span class="text-xs text-gray-500">${item.engagement} engagement</span>
+                    </div>
+                    <h3 class="text-lg font-bold text-gray-900 dark:text-white mb-2">${item.topic}</h3>
+                    <p class="text-sm text-gray-600 dark:text-gray-400"><i class="fas fa-chart-line mr-1 text-viral-500"></i>${item.reason}</p>
+                </div>
+            `).join('');
+        }
+
+        function selectTopic(index) {
+            document.querySelectorAll('.trending-card').forEach(card => card.classList.remove('selected'));
+            document.getElementById(`topic-${index}`).classList.add('selected');
+            selectedTopic = trendingData[index];
+
+            setTimeout(() => {
+                document.getElementById('step2').classList.remove('hidden');
+                document.getElementById('selectedTopicText').textContent = selectedTopic.topic;
+                generateHooks(selectedTopic);
+                document.getElementById('step2').scrollIntoView({ behavior: 'smooth' });
+            }, 300);
+        }
+
+        function generateHooks(topicData) {
+            const hooks = [
+                { text: `Stop making this ${topicData.topic} mistake (it's costing you)`, score: 96, type: 'Fear/Problem' },
+                { text: `I tried ${topicData.topic} for 30 days... shocking results`, score: 94, type: 'Curiosity' },
+                { text: `The ${topicData.topic} secret nobody talks about`, score: 92, type: 'Intrigue' },
+                { text: `POV: You finally mastered ${topicData.topic}`, score: 89, type: 'Aspirational' },
+                { text: `3 ${topicData.topic} hacks that changed everything`, score: 87, type: 'Value' }
+            ];
+
+            const container = document.getElementById('hooksContainer');
+            container.innerHTML = hooks.map((hook, index) => `
+                <div class="hook-card bg-white dark:bg-gray-800 rounded-xl p-6 shadow-md border-2 border-transparent" onclick="selectHook(${index}, '${hook.text.replace(/'/g, "\\'")}')" id="hook-${index}">
+                    <div class="flex justify-between items-start mb-3">
+                        <span class="bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-300 px-3 py-1 rounded-full text-sm font-medium">${hook.score}/100 viral score</span>
+                        <span class="text-xs text-gray-500 bg-gray-100 dark:bg-gray-700 px-2 py-1 rounded">${hook.type}</span>
+                    </div>
+                    <p class="text-lg font-medium text-gray-900 dark:text-white">${hook.text}</p>
+                </div>
+            `).join('');
+        }
+
+        function selectHook(index, hookText) {
+            document.querySelectorAll('.hook-card').forEach(card => card.classList.remove('selected'));
+            document.getElementById(`hook-${index}`).classList.add('selected');
+            selectedHook = hookText;
+
+            setTimeout(() => {
+                document.getElementById('step3').classList.remove('hidden');
+                document.getElementById('step3').scrollIntoView({ behavior: 'smooth' });
+            }, 300);
+        }
+
+        function selectFormat(format) {
+            document.querySelectorAll('.format-btn').forEach(btn => btn.classList.remove('active'));
+            document.getElementById(`format-${format}`).classList.add('active');
+            selectedFormat = format;
+            document.getElementById('createBtn').disabled = false;
+        }
+
+        function createContent() {
+            const btn = document.getElementById('createBtn');
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Creating viral content...';
+
+            setTimeout(() => {
+                generateFinalContent();
+                document.getElementById('step4').classList.remove('hidden');
+                document.getElementById('step4').scrollIntoView({ behavior: 'smooth' });
+                btn.disabled = false;
+                btn.innerHTML = '<i class="fas fa-magic mr-2"></i>Create Viral Content';
+            }, 2000);
+        }
+
+        function generateFinalContent() {
+            document.getElementById('contentFormatBadge').textContent = selectedFormat.toUpperCase();
+            document.getElementById('viralScoreBadge').textContent = `Viral Score: ${selectedTopic.viralScore}/100`;
+            document.getElementById('engagementPrediction').textContent = selectedTopic.engagement;
+            document.getElementById('finalHook').textContent = selectedHook;
+
+            const caption = generateCaption(selectedFormat, selectedTopic, selectedHook);
+            document.getElementById('finalCaption').value = caption;
+
+            const hashtags = generateTrendingHashtags(selectedTopic.topic);
+            document.getElementById('finalHashtags').innerHTML = hashtags.map(tag => 
+                `<span class="px-3 py-1 bg-viral-100 dark:bg-viral-900 text-viral-700 dark:text-viral-300 rounded-full text-sm font-medium">${tag}</span>`
+            ).join('');
+
+            if (selectedFormat === 'carousel' || selectedFormat === 'reels') {
+                document.getElementById('contentStructure').classList.remove('hidden');
+                document.getElementById('structureList').innerHTML = generateStructure(selectedFormat);
+            } else {
+                document.getElementById('contentStructure').classList.add('hidden');
+            }
+
+            document.getElementById('whyItWorks').innerHTML = `
+                <li>✓ Addresses pain point directly</li>
+                <li>✓ Uses proven viral hook format</li>
+                <li>✓ Optimized for ${selectedFormat} algorithm</li>
+                <li>✓ Includes trending hashtags</li>
+                <li>✓ Timing aligns with peak engagement</li>
+            `;
+
+            const times = ['6:00-8:00 AM', '12:00-1:00 PM', '5:00-7:00 PM', '9:00-11:00 PM'];
+            document.getElementById('bestTime').textContent = times[Math.floor(Math.random() * times.length)] + ' (your local time)';
+        }
+
+        function generateCaption(format, topic, hook) {
+            const intros = {
+                reels: `${hook} 🎬\n\nWatch till the end for the game-changer! 👇`,
+                carousel: `${hook} 📊\n\nSave this for later! Which slide hit hardest? 👇`,
+                story: `${hook} 📱\n\nSwipe up for the full breakdown!`,
+                static: `${hook} 📸\n\nDouble tap if you agree! ❤️`
+            };
+
+            const body = `\n\nI used to struggle with ${topic.topic.toLowerCase()} until I discovered these simple tweaks.\n\nThe difference? Night and day. 🔥\n\nHere is exactly what worked:`;
+
+            const ctas = {
+                reels: `\n\nFollow for more tips! 💡\n.\n.\n.`,
+                carousel: `\n\nWhich tip are you trying first? Comment below! 👇\n.\n.\n.`,
+                story: `\n\nReply with your biggest takeaway! 💬`,
+                static: `\n\nTag someone who needs to see this! 👥\n.\n.\n.`
+            };
+
+            return intros[format] + body + ctas[format];
+        }
+
+        function generateTrendingHashtags(topic) {
+            const topicTag = topic.toLowerCase().replace(/\s+/g, '').substring(0, 15);
+            return [`#${topicTag}`, '#viral', '#trending', '#instagram', '#growth'];
+        }
+
+        function generateStructure(format) {
+            if (format === 'carousel') {
+                return `
+                    <li><strong>Slide 1:</strong> Hook - ${selectedHook}</li>
+                    <li><strong>Slide 2:</strong> Problem identification</li>
+                    <li><strong>Slide 3:</strong> Solution overview</li>
+                    <li><strong>Slide 4:</strong> Tip #1 with visual</li>
+                    <li><strong>Slide 5:</strong> Tip #2 with visual</li>
+                    <li><strong>Slide 6:</strong> Results/transformation</li>
+                    <li><strong>Slide 7:</strong> CTA + engagement question</li>
+                `;
+            } else if (format === 'reels') {
+                return `
+                    <li><strong>0-3 sec:</strong> Hook (stop the scroll)</li>
+                    <li><strong>3-10 sec:</strong> Problem agitation</li>
+                    <li><strong>10-25 sec:</strong> Solution reveal</li>
+                    <li><strong>25-30 sec:</strong> Proof/results</li>
+                    <li><strong>30-45 sec:</strong> Tips/action steps</li>
+                    <li><strong>45-60 sec:</strong> CTA + follow prompt</li>
+                `;
+            }
+            return '';
+        }
+
+        function copyContent() {
+            const hook = document.getElementById('finalHook').textContent;
+            const caption = document.getElementById('finalCaption').value;
+            const hashtags = Array.from(document.querySelectorAll('#finalHashtags span')).map(s => s.textContent).join(' ');
+            
+            const fullText = `${hook}\n\n${caption}\n\n${hashtags}`;
+            navigator.clipboard.writeText(fullText);
+            alert('Full content copied to clipboard!');
+        }
+
+        function resetAll() {
+            if (confirm('Start over with new research?')) {
+                selectedTopic = null;
+                selectedHook = null;
+                selectedFormat = null;
+                
+                document.getElementById('step2').classList.add('hidden');
+                document.getElementById('step3').classList.add('hidden');
+                document.getElementById('step4').classList.add('hidden');
+                document.getElementById('trendingTopics').classList.add('hidden');
+                document.querySelectorAll('.trending-card, .hook-card, .format-btn').forEach(el => el.classList.remove('selected', 'active'));
+                document.getElementById('createBtn').disabled = true;
+                
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            }
+        }
+    </script>
+</body>
+</html>
